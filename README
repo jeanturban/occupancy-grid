@@ -1,0 +1,120 @@
+ME132a final assignment: the starter package
+============================================
+
+Summary
+-------
+
+In this lab assignment, you will make a robot drive around and collect data from
+a scanning laser range finder. Details and required deliverables are described
+in a separate document named "me132a-final.pdf". Here we introduce the code with
+which you will begin.
+
+The name of the ROS package in which your controller will be implemented is
+"me132a_epoch".
+
+Preparations
+------------
+
+Before beginning, we must setup the shell for using ROS, e.g., to include
+various tools like rostopic in your system path.
+
+    source /opt/ros/indigo/setup.zsh
+
+If you are using Bash instead of the Z shell, replace `setup.zsh` througout this
+README with `setup.bash`. To initialize a ROS workspace with our example,
+
+    mkdir -p me132ab_ws/src
+    cd me132ab_ws/src
+    catkin_init_workspace
+
+    mv ../../me132a_epoch .
+    cd ..
+
+At this step, you should be in the directory "me132ab_ws". Finally, to build our
+example and begin using this ROS workspace,
+
+    catkin_make
+    source devel/setup.zsh
+
+Note that this configuration will cause package data to be obtained from under
+src/. Thus, for files that do not need to be compiled, you can edit and run them
+without needing to `catkin_make` again. Alternatively, an out-of-source
+installation can be achieved using `catkin_make install` and then `source
+install/setup.zsh`.
+
+
+Running the simulation
+----------------------
+
+To start the simulator,
+
+    roslaunch me132a_epoch stage.launch
+
+A window should open depicting a red rectangle (the robot) surrounded by a
+square with side length of 6.5 m and having one corner at the origin. Open a new
+terminal, declare usage of the same workspace that was created above using
+`source devel/setup.zsh` or similar, and then
+
+    rosrun me132a_epoch wander.py
+
+The robot should begin to turn toward the first waypoint, (2, 2). It will
+repeatedly visit the waypoints that are hard-coded in the source file: (2, 2),
+(4, 1), (2, 3). Note that this motion controller is trivial and naive. We can do
+much better (such methods are the topic of ME132b, next quarter). However, it
+suffices for the purposes of this first lab activity. The equivalent example
+using C++ can be run similarly
+
+    rosrun me132a_epoch wander
+
+The source code for these are, respectively, me132a_epoch/scripts/wander.py and
+me132a_epoch/src/wander.cpp. The waypoints are defined in each source file under
+the comment "List your waypoints here" (line 58 of wander.py and line 95 of
+wander.cpp). You can change these, especially if you find that the given
+waypoints do not cover the workspace well in terms of extent and quality of the
+range finder data.
+
+
+Recording and plotting raw range measurements
+---------------------------------------------
+
+Start simulation environment and run one of the "wander" controllers, as
+described above. In a new terminal,
+
+    rosrun me132a_epoch dumpranges.py
+
+which will cause range finder data to be saved to a plaintext file named
+"savedranges.txt". The file is opened in append-mode, so unless you manually
+delete the file, every time that you run dumpranges.py new values will be
+appended to the file.
+
+The ROS node created by dumpranges.py only depends on two topics: "scan" and
+"tf". The former provides the range finder data, and the latter provides
+transforms between the various coordinate frames that are defined during the
+trial.  Here, the pose estimate is obtained as a transform from the "odom"
+coordinate frame to the coordinate frame based at the scanner.
+
+rplotter.py is a Python script for plotting the raw measurements as saved by
+dumpranges.py. Additional documentation about usage is available near the top of
+each of these files.
+
+These two tools for plotting can work just as well from log data that is played
+using rosbag. If you do not have a log file yet, run `rosbag record -a` for a
+few minutes, while one of the "wander" controllers continues to run. Stop the
+recording, the "wander" controller, and the Stage simulation. Now start a
+minimal ROS session
+
+    roscore
+
+and in a new terminal, use `rosbag play` to play back the desired log file. You
+can now use dumpranges.py and rplotter.py to save and and plot raw range
+measurements from the log.
+
+
+Questions?
+----------
+
+Scott <slivingston@cds.caltech.edu>
+telephone numbers are
+lab: x2315 (+1 626 395 2315)
+office: x3531
+mobile: +1 865 964 5384
