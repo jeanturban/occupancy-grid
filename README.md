@@ -1,2 +1,2 @@
 # occupancy-grid
-see project description on jeanturban.com
+see project description on jeanturban.me
